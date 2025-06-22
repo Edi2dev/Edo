@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Konfirmasi Top Up</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+  <div class="bg-white p-6 rounded-xl shadow-xl text-center max-w-sm">
+    <h2 class="text-xl font-bold mb-4">Konfirmasi Top Up</h2>
+    <div id="status" class="text-gray-700">Memproses...</div>
+  </div>
+
+  <script>
+    // Ambil parameter dari URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const nomor = urlParams.get("nomor");
+    const nominal = parseInt(urlParams.get("nominal"), 10);
+
+    if (!nomor || !nominal) {
+      document.getElementById("status").textContent = "Data tidak lengkap.";
+    } else {
+      // Ambil data saldo dari localStorage
+      let dataSaldo = JSON.parse(localStorage.getItem("dataSaldo")) || {};
+      let saldoSekarang = dataSaldo[nomor] || 0;
+
+      // Tambahkan saldo
+      saldoSekarang += nominal;
+      dataSaldo[nomor] = saldoSekarang;
+
+      // Simpan kembali ke localStorage
+      localStorage.setItem("dataSaldo", JSON.stringify(dataSaldo));
+
+      // Hapus dari daftar pending topup (jika ada)
+      let pending = JSON.parse(localStorage.getItem("pendingTopup")) || [];
+      pending = pending.filter(item => !(item.nomor === nomor && item.nominal === nominal));
+      localStorage.setItem("pendingTopup", JSON.stringify(pending));
+
+      // Tampilkan status
+      document.getElementById("status").innerHTML = `
+        ✅ Top up berhasil dikonfirmasi.<br><br>
+        <strong>Nomor:</strong> ${nomor}<br>
+        <strong>+Rp ${nominal.toLocaleString()}</strong><br>
+        <strong>Saldo sekarang:</strong> Rp ${saldoSekarang.toLocaleString()}
+      `;
+    }
+  </script>
+</body>
+</html>

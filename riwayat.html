@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Riwayat Top Up</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #e7fff3;
+      padding: 20px;
+      animation: fadeIn 0.4s ease;
+    }
+
+    h2 {
+      text-align: center;
+      color: #00a86b;
+      margin-bottom: 25px;
+    }
+
+    .item {
+      background-color: white;
+      border-left: 5px solid #00a86b;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+      animation: fadeInItem 0.4s ease;
+    }
+
+    .item h3 {
+      margin: 0 0 5px 0;
+      color: #00a86b;
+    }
+
+    .item p {
+      margin: 3px 0;
+      color: #333;
+    }
+
+    .status {
+      font-weight: bold;
+      color: orange;
+    }
+
+    .status.success {
+      color: green;
+    }
+
+    .kosong {
+      text-align: center;
+      color: #888;
+      margin-top: 40px;
+      font-style: italic;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(15px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    @keyframes fadeInItem {
+      from {opacity: 0; transform: scale(0.97);}
+      to {opacity: 1; transform: scale(1);}
+    }
+
+    .back-btn {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .back-btn button {
+      padding: 10px 20px;
+      background-color: #00a86b;
+      border: none;
+      border-radius: 30px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .back-btn button:hover {
+      background-color: #00995f;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Riwayat Top Up</h2>
+
+  <div id="riwayatContainer"></div>
+
+  <div class="back-btn">
+    <button onclick="window.location.href='dashboard.html'">⬅️ Kembali ke Dashboard</button>
+  </div>
+
+  <script>
+    const container = document.getElementById("riwayatContainer");
+    const riwayat = JSON.parse(localStorage.getItem("riwayatTopup") || "[]");
+
+    if (riwayat.length === 0) {
+      container.innerHTML = "<p class='kosong'>Belum ada transaksi top up.</p>";
+    } else {
+      riwayat.reverse().forEach(item => {
+        const box = document.createElement("div");
+        box.className = "item";
+        const statusClass = item.status === "Berhasil" ? "success" : "";
+        box.innerHTML = `
+          <h3>Rp ${item.nominal.toLocaleString()}</h3>
+          <p>Status: <span class="status ${statusClass}">${item.status}</span></p>
+          <p>Waktu: ${item.waktu}</p>
+        `;
+        container.appendChild(box);
+      });
+    }
+  </script>
+
+</body>
+</html>

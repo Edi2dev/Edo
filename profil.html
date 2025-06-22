@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profil</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+  <div class="p-6">
+    <h1 class="text-2xl font-bold mb-4">Profil Kamu</h1>
+
+    <div class="bg-white rounded-xl p-4 shadow">
+      <div class="mb-2">
+        <div class="text-sm text-gray-500">Nomor HP</div>
+        <div id="nomorProfil" class="text-lg font-semibold">-</div>
+      </div>
+    </div>
+<button
+  onclick="window.history.back()"
+  style="
+    position: fixed;
+    top: 25px;
+    right: 95px;
+    background: none;
+    border: none;
+    color: #fffff;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 5px 5px;
+    user-select: none;
+    font-weight: 600;
+  "
+  aria-label="Kembali"
+>
+   ⬅️ Kembali 
+</button>
+    <div class="mt-6">
+      <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded-xl w-full">
+        Logout
+      </button>
+    </div>
+
+    <!-- Tombol menuju halaman login admin -->
+    <div class="mt-4">
+      <button onclick="window.location.href='login-admin.html'" class="bg-black text-white px-4 py-2 rounded-xl w-full">
+        Admin
+      </button>
+      
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    const nomor = localStorage.getItem("nomorHP");
+    if (!nomor) location.href = "login.html";
+
+    document.getElementById("nomorProfil").textContent = nomor;
+
+    function logout() {
+      localStorage.removeItem("nomorHP");
+      location.href = "login.html";
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html><html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EdiPay Pin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }body {
+  background: #f0fdf4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.pin-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+  animation: fadeIn 0.5s ease;
+}
+
+.pin-container h2 {
+  margin-bottom: 1rem;
+  color: #16a34a;
+}
+
+.pin-input {
+  letter-spacing: 1rem;
+  font-size: 2rem;
+  padding: 1rem;
+  width: 100%;
+  text-align: center;
+  border: 2px solid #16a34a;
+  border-radius: 1rem;
+  outline: none;
+  margin-bottom: 1rem;
+}
+
+button {
+  padding: 0.75rem 2rem;
+  border: none;
+  background: #16a34a;
+  color: white;
+  font-weight: 600;
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #15803d;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div class="pin-container">
+    <h2>Edipay PIN</h2>
+    <input type="password" maxlength="6" id="pin" class="pin-input" placeholder="••••••">
+    <br>
+    <button onclick="simpanPIN()">Simpan PIN</button>
+  </div>  <script>
+    function simpanPIN() {
+      const pin = document.getElementById('pin').value;
+      const nomor = localStorage.getItem('nomorHP');
+
+      if (pin.length !== 6) {
+        alert("PIN harus 6 digit!");
+        return;
+      }
+
+      localStorage.setItem('pin_' + nomor, pin);
+      alert("Berasil Masuk!");
+      window.location.href = 'dashboard.html';
+    }
+  </script></body>
+</html>
