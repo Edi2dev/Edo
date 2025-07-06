@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Unggah Foto & Panel Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3498db;
+            --primary-dark: #2980b9;
+            --secondary: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --light: #f8f9fa;
+            --dark: #2c3e50;
+            --gray: #95a5a6;
+            --light-gray: #ecf0f1;
+            --admin-bg: #f5f7fa;
+            --admin-sidebar: #2c3e50;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            font-size: 1.8rem;
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        
+        nav a:hover, nav a.active {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            display: flex;
+            min-height: calc(100vh - 70px);
+        }
+        
+        /* User Section Styles */
+        .user-section {
+            flex: 1;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .page-title {
+            color: var(--dark);
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--light-gray);
+        }
+        
+        .upload-section {
+            margin-bottom: 2rem;
+        }
+        
+        .upload-card {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px dashed #ddd;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-card:hover {
+            border-color: var(--primary);
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+        
+        .upload-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .upload-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .upload-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .upload-description {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+        }
+        
+        .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .preview-box {
+            width: 150px;
+            height: 150px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            background: #f9f9f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .preview-box img {
+            max-width: 100%;
+            max-height: 100%;
+            display: none;
+        }
+        
+        .preview-placeholder {
+            color: var(--gray);
+            text-align: center;
+            padding: 10px;
+            font-size: 0.8rem;
+        }
+        
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+        
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #27ae60;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: rgba(52, 152, 219, 0.1);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .custom-file-input {
+            display: none;
+        }
+        
+        .file-label {
+            display: inline-block;
+            padding: 0.7rem 1.2rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .file-label:hover {
+            background: var(--primary-dark);
+        }
+        
+        .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: var(--danger);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+        
+        .remove-btn:hover {
+            opacity: 1;
+        }
+        
+        .status-bar {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .status-success {
+            background: rgba(46, 204, 113, 0.15);
+            border: 1px solid var(--secondary);
+            color: var(--secondary);
+        }
+        
+        .status-error {
+            background: rgba(231, 76, 60, 0.15);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+        
+        .whatsapp-icon {
+            color: #25D366;
+        }
+        
+        .telegram-icon {
+            color: #0088CC;
+        }
+        
+        .contact-info {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .user-info {
+            background: var(--light-gray);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        
+        /* Admin Section Styles */
+        .admin-section {
+            display: none;
+            flex: 1;
+            background: var(--admin-bg);
+            padding: 2rem;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .admin-title {
+            font-size: 1.5rem;
+            color: var(--dark);
+        }
+        
+        .admin-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            flex: 1;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .stat-icon.imei {
+            background: rgba(52, 152, 219, 0.2);
+            color: var(--primary);
+        }
+        
+        .stat-icon.id {
+            background: rgba(46, 204, 113, 0.2);
+            color: var(--secondary);
+        }
+        
+        .stat-icon.selfie {
+            background: rgba(231, 76, 60, 0.2);
+            color: var(--danger);
+        }
+        
+        .stat-content h3 {
+            font-size: 1.8rem;
+            margin-bottom: 0.2rem;
+        }
+        
+        .stat-content p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .submissions {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        
+        .submission-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        
+        .submission-card {
+            border: 1px solid #eee;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .submission-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            background: var(--light-gray);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .card-body {
+            padding: 1rem;
+        }
+        
+        .submission-images {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .submission-image {
+            height: 80px;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #f9f9f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            font-size: 0.8rem;
+            text-align: center;
+        }
+        
+        .submission-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .card-footer {
+            padding: 1rem;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow: auto;
+            padding: 2rem;
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+        
+        .modal-images {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .modal-image {
+            height: 200px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f9f9f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-image img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+        
+        .modal-info {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+        
+        .info-row {
+            display: flex;
+            margin-bottom: 0.8rem;
+        }
+        
+        .info-label {
+            width: 120px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        /* Login Modal */
+        .login-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .login-content {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            padding: 2rem;
+            position: relative;
+        }
+        
+        .login-title {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+        }
+        
+        .login-form .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .login-form input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        
+        .login-error {
+            color: var(--danger);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .preview-box {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .admin-stats {
+                flex-direction: column;
+            }
+            
+            .modal-images {
+                grid-template-columns: 1fr;
+            }
+            
+            nav ul {
+                gap: 0.8rem;
+            }
+            
+            .logo h1 {
+                font-size: 1.2rem;
+            }
+            
+            .submission-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-camera"></i>
+            <h1>Sistem Unggah Foto & Panel Admin</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#" class="active" id="user-link">Beranda</a></li>
+                <li><a href="#" id="admin-link">Panel Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <div class="main-content">
+        <!-- User Section -->
+        <section class="user-section" id="user-section">
+            <div class="container">
+                <h2 class="page-title">Unggah Foto Identitas</h2>
+                <p>Silakan unggah foto IMEI handphone, identitas, dan selfie Anda</p>
+                
+                <div class="user-info">
+                    <div class="form-group">
+                        <label for="username">Nama Pengguna</label>
+                        <input type="text" id="username" placeholder="Masukkan nama lengkap Anda">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Nomor Telepon</label>
+                        <input type="text" id="phone" placeholder="Masukkan nomor telepon aktif">
+                    </div>
+                </div>
+                
+                <!-- Foto IMEI Handphone -->
+                <div class="upload-section">
+                    <div class="upload-card">
+                        <div class="upload-header">
+                            <div class="upload-icon">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <div>
+                                <div class="upload-title">Foto IMEI Handphone</div>
+                                <div class="upload-description">Unggah foto yang menampilkan IMEI handphone Anda (format JPG/PNG)</div>
+                            </div>
+                        </div>
+                        
+                        <input type="file" id="file-imeiphoto" class="custom-file-input" accept="image/*">
+                        <label for="file-imeiphoto" class="file-label">
+                            <i class="fas fa-upload"></i> Pilih Foto
+                        </label>
+                        
+                        <div class="preview-container">
+                            <div class="preview-box">
+                                <img id="captured-imei" alt="Preview IMEI">
+                                <div class="preview-placeholder">Belum ada foto</div>
+                                <div class="remove-btn" onclick="removeImage('imeiphoto')">×</div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="value-imeiphoto" name="imei_photo">
+                    </div>
+                </div>
+                
+                <!-- Foto Identitas -->
+                <div class="upload-section">
+                    <div class="upload-card">
+                        <div class="upload-header">
+                            <div class="upload-icon">
+                                <i class="fas fa-id-card"></i>
+                            </div>
+                            <div>
+                                <div class="upload-title">Foto Identitas</div>
+                                <div class="upload-description">Unggah foto KTP, SIM, atau Paspor Anda (format JPG/PNG)</div>
+                            </div>
+                        </div>
+                        
+                        <input type="file" id="file-id-photo" class="custom-file-input" accept="image/*">
+                        <label for="file-id-photo" class="file-label">
+                            <i class="fas fa-upload"></i> Pilih Foto
+                        </label>
+                        
+                        <div class="preview-container">
+                            <div class="preview-box">
+                                <img id="captured-passport" alt="Preview Identitas">
+                                <div class="preview-placeholder">Belum ada foto</div>
+                                <div class="remove-btn" onclick="removeImage('id-photo')">×</div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="value-id-photo" name="id_photo">
+                    </div>
+                </div>
+                
+                <!-- Foto Selfie -->
+                <div class="upload-section">
+                    <div class="upload-card">
+                        <div class="upload-header">
+                            <div class="upload-icon">
+                                <i class="fas fa-user-circle"></i>
+                            </div>
+                            <div>
+                                <div class="upload-title">Foto Selfie</div>
+                                <div class="upload-description">Unggah foto selfie Anda memegang identitas (format JPG/PNG)</div>
+                            </div>
+                        </div>
+                        
+                        <input type="file" id="file-id-selfie" class="custom-file-input" accept="image/*">
+                        <label for="file-id-selfie" class="file-label">
+                            <i class="fas fa-upload"></i> Pilih Foto
+                        </label>
+                        
+                        <div class="preview-container">
+                            <div class="preview-box">
+                                <img id="captured-selfie" alt="Preview Selfie">
+                                <div class="preview-placeholder">Belum ada foto</div>
+                                <div class="remove-btn" onclick="removeImage('id-selfie')">×</div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="value-id-selfie" name="selfie_photo">
+                    </div>
+                </div>
+                
+                <div class="status-bar" id="statusBar"></div>
+                
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary" onclick="sendViaWhatsApp()">
+                        <i class="fab fa-whatsapp whatsapp-icon"></i> Kirim via WhatsApp
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="saveSubmission()">
+                        <i class="fas fa-save"></i> Simpan Pengajuan
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="resetForm()">
+                        <i class="fas fa-redo"></i> Reset Form
+                    </button>
+                </div>
+                
+                <div class="contact-info">
+                    <p><i class="fas fa-info-circle"></i> Butuh bantuan? Hubungi kami di 085808760688</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Admin Section -->
+        <section class="admin-section" id="admin-section">
+            <div class="admin-header">
+                <h2 class="admin-title">Panel Admin</h2>
+                <div>
+                    <button class="btn btn-danger" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                    <button class="btn btn-primary" onclick="refreshSubmissions()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+            
+            <div class="admin-stats">
+                <div class="stat-card">
+                    <div class="stat-icon imei">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="imei-count">0</h3>
+                        <p>Foto IMEI</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon id">
+                        <i class="fas fa-id-card"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="id-count">0</h3>
+                        <p>Foto Identitas</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon selfie">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="selfie-count">0</h3>
+                        <p>Foto Selfie</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="submissions">
+                <h3><i class="fas fa-list"></i> Daftar Pengajuan</h3>
+                <div class="submission-list" id="submission-list">
+                    <!-- Submission cards will be added here dynamically -->
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Submission Detail Modal -->
+    <div class="modal" id="submission-modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h2>Detail Pengajuan</h2>
+            
+            <div class="modal-images" id="modal-images">
+                <!-- Images will be added here -->
+            </div>
+            
+            <div class="modal-info">
+                <div class="info-row">
+                    <div class="info-label">Pengguna:</div>
+                    <div id="modal-username">-</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Nomor Telepon:</div>
+                    <div id="modal-phone">-</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Tanggal:</div>
+                    <div id="modal-date">-</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Status:</div>
+                    <div id="modal-status">-</div>
+                </div>
+            </div>
+            
+            <div class="btn-group" style="margin-top: 1.5rem;">
+                <button class="btn btn-primary" onclick="approveSubmission()">
+                    <i class="fas fa-check"></i> Setujui
+                </button>
+                <button class="btn btn-danger" onclick="rejectSubmission()">
+                    <i class="fas fa-times"></i> Tolak
+                </button>
+                <button class="btn btn-outline" onclick="closeModal()">
+                    <i class="fas fa-times"></i> Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Admin Login Modal -->
+    <div class="login-modal" id="login-modal">
+        <div class="login-content">
+            <span class="close-modal" onclick="closeLoginModal()">&times;</span>
+            <h2 class="login-title">Login Admin</h2>
+            
+            <form class="login-form" onsubmit="adminLogin(event)">
+                <div class="form-group">
+                    <label for="admin-username">Username</label>
+                    <input type="text" id="admin-username" placeholder="Masukkan username admin" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="admin-password">Password</label>
+                    <input type="password" id="admin-password" placeholder="Masukkan password" required>
+                </div>
+                
+                <div class="login-error" id="login-error">
+                    Username atau password salah!
+                </div>
+                
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="closeLoginModal()">
+                        Batal
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Data storage for submissions
+        let submissions = JSON.parse(localStorage.getItem('submissions')) || [];
+        let currentSubmission = null;
+        let isAdminLoggedIn = localStorage.getItem('isAdminLoggedIn') === 'true';
+        
+        // Admin credentials (in a real app, these should be stored securely server-side)
+        const ADMIN_USERNAME = 'Ryedz';
+        const ADMIN_PASSWORD = 'admin123';
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            setupImagePreview('file-imeiphoto', 'captured-imei', 'value-imeiphoto');
+            setupImagePreview('file-id-photo', 'captured-passport', 'value-id-photo');
+            setupImagePreview('file-id-selfie', 'captured-selfie', 'value-id-selfie');
+            
+            // Navigation
+            document.getElementById('admin-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                if (isAdminLoggedIn) {
+                    showAdminPanel();
+                } else {
+                    document.getElementById('login-modal').style.display = 'flex';
+                }
+            });
+            
+            document.getElementById('user-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                showUserPanel();
+            });
+            
+            // Check if admin is already logged in
+            if (isAdminLoggedIn) {
+                showAdminPanel();
+            }
+        });
+        
+        // Fungsi untuk menampilkan preview gambar
+        function setupImagePreview(inputId, previewId, valueId) {
+            const input = document.getElementById(inputId);
+            const preview = document.getElementById(previewId);
+            const valueInput = document.getElementById(valueId);
+            const placeholder = preview.parentElement.querySelector('.preview-placeholder');
+            
+            input.addEventListener('change', e => {
+                const file = e.target.files[0];
+                if (file) {
+                    // Check file type
+                    const validTypes = ['image/jpeg', 'image/png'];
+                    if (!validTypes.includes(file.type)) {
+                        showStatus('Format file tidak valid. Harus JPG atau PNG!', false);
+                        input.value = '';
+                        return;
+                    }
+                    
+                    // Check file size (max 2MB)
+                    if (file.size > 2 * 1024 * 1024) {
+                        showStatus('Ukuran file terlalu besar. Maksimal 2MB!', false);
+                        input.value = '';
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const result = e.target.result;
+                        preview.src = result;
+                        preview.style.display = 'block';
+                        valueInput.value = result;
+                        
+                        // Sembunyikan placeholder
+                        placeholder.style.display = 'none';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    preview.style.display = 'none';
+                    preview.src = '';
+                    valueInput.value = '';
+                    
+                    // Tampilkan placeholder kembali
+                    placeholder.style.display = 'block';
+                }
+            });
+        }
+        
+        // Fungsi untuk menghapus gambar
+        function removeImage(type) {
+            let input, preview, valueInput, placeholder;
+            
+            switch(type) {
+                case 'imeiphoto':
+                    input = document.getElementById('file-imeiphoto');
+                    preview = document.getElementById('captured-imei');
+                    valueInput = document.getElementById('value-imeiphoto');
+                    placeholder = preview.parentElement.querySelector('.preview-placeholder');
+                    break;
+                case 'id-photo':
+                    input = document.getElementById('file-id-photo');
+                    preview = document.getElementById('captured-passport');
+                    valueInput = document.getElementById('value-id-photo');
+                    placeholder = preview.parentElement.querySelector('.preview-placeholder');
+                    break;
+                case 'id-selfie':
+                    input = document.getElementById('file-id-selfie');
+                    preview = document.getElementById('captured-selfie');
+                    valueInput = document.getElementById('value-id-selfie');
+                    placeholder = preview.parentElement.querySelector('.preview-placeholder');
+                    break;
+            }
+            
+            // Reset input file
+            input.value = '';
+            
+            // Sembunyikan preview
+            preview.style.display = 'none';
+            preview.src = '';
+            
+            // Reset value input
+            valueInput.value = '';
+            
+            // Tampilkan placeholder
+            placeholder.style.display = 'block';
+        }
+        
+        // Fungsi untuk menampilkan status
+        function showStatus(message, isSuccess = true) {
+            const statusBar = document.getElementById('statusBar');
+            statusBar.textContent = message;
+            statusBar.className = 'status-bar ' + (isSuccess ? 'status-success' : 'status-error');
+            statusBar.style.display = 'block';
+            
+            // Sembunyikan status setelah 5 detik
+            setTimeout(() => {
+                statusBar.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Fungsi untuk mengirim via WhatsApp
+        function sendViaWhatsApp() {
+            const username = document.getElementById('username').value;
+            const phone = document.getElementById('phone').value;
+            const imei = document.getElementById('value-imeiphoto').value;
+            const idPhoto = document.getElementById('value-id-photo').value;
+            const selfie = document.getElementById('value-id-selfie').value;
+            
+            if (!username || !phone) {
+                showStatus('Silakan lengkapi nama dan nomor telepon!', false);
+                return;
+            }
+            
+            if (!imei || !idPhoto || !selfie) {
+                showStatus('Silakan lengkapi semua foto terlebih dahulu!', false);
+                return;
+            }
+            
+            // Nomor WhatsApp tujuan (ganti dengan nomor yang sesuai)
+            const phoneNumber = '6285808760688';
+            
+            // Pesan yang akan dikirim
+            const message = encodeURIComponent(
+                `Halo, saya ${username} (${phone}) telah mengunggah foto identitas melalui website. ` +
+                'Berikut adalah data saya. Mohon untuk diproses. Terima kasih.'
+            );
+            
+            // Membuka WhatsApp dengan pesan yang sudah disiapkan
+            window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+            
+            showStatus('WhatsApp dibuka, silakan kirim pesan dengan foto yang sudah diunggah.');
+        }
+        
+        // Reset form
+        function resetForm() {
+            // Reset user info
+            document.getElementById('username').value = '';
+            document.getElementById('phone').value = '';
+            
+            // Reset all previews
+            document.querySelectorAll('.preview-box img').forEach(img => {
+                img.style.display = 'none';
+                img.src = '';
+                img.parentElement.querySelector('.preview-placeholder').style.display = 'block';
+            });
+            
+            // Reset all hidden inputs
+            document.querySelectorAll('input[type="hidden"]').forEach(input => {
+                input.value = '';
+            });
+            
+            // Reset all file inputs
+            document.querySelectorAll('input[type="file"]').forEach(input => {
+                input.value = '';
+            });
+            
+            showStatus('Formulir telah direset', true);
+        }
+        
+        // Save submission
+        function saveSubmission() {
+            const username = document.getElementById('username').value;
+            const phone = document.getElementById('phone').value;
+            const imei = document.getElementById('value-imeiphoto').value;
+            const idPhoto = document.getElementById('value-id-photo').value;
+            const selfie = document.getElementById('value-id-selfie').value;
+            
+            if (!username || !phone) {
+                showStatus('Silakan lengkapi nama dan nomor telepon!', false);
+                return;
+            }
+            
+            if (!imei || !idPhoto || !selfie) {
+                showStatus('Silakan lengkapi semua foto terlebih dahulu!', false);
+                return;
+            }
+            
+            // Validate phone number format
+            const phoneRegex = /^[0-9]{10,13}$/;
+            if (!phoneRegex.test(phone)) {
+                showStatus('Format nomor telepon tidak valid!', false);
+                return;
+            }
+            
+            const submission = {
+                id: Date.now(),
+                username,
+                phone,
+                imei,
+                idPhoto,
+                selfie,
+                date: new Date().toLocaleString(),
+                status: 'Pending'
+            };
+            
+            submissions.push(submission);
+            localStorage.setItem('submissions', JSON.stringify(submissions));
+            
+            showStatus('Pengajuan berhasil disimpan!', true);
+            resetForm();
+        }
+        
+        // Admin login
+        function adminLogin(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('admin-username').value;
+            const password = document.getElementById('admin-password').value;
+            
+            if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+                isAdminLoggedIn = true;
+                localStorage.setItem('isAdminLoggedIn', 'true');
+                closeLoginModal();
+                showAdminPanel();
+                refreshAdminStats();
+                loadSubmissions();
+            } else {
+                document.getElementById('login-error').style.display = 'block';
+            }
+        }
+        
+        // Logout admin
+        function logout() {
+            isAdminLoggedIn = false;
+            localStorage.removeItem('isAdminLoggedIn');
+            showUserPanel();
+        }
+        
+        // Show admin panel
+        function showAdminPanel() {
+            document.getElementById('user-section').style.display = 'none';
+            document.getElementById('admin-section').style.display = 'block';
+            document.querySelector('#user-link').classList.remove('active');
+            document.querySelector('#admin-link').classList.add('active');
+            refreshAdminStats();
+            loadSubmissions();
+        }
+        
+        // Show user panel
+        function showUserPanel() {
+            document.getElementById('admin-section').style.display = 'none';
+            document.getElementById('user-section').style.display = 'block';
+            document.querySelector('#admin-link').classList.remove('active');
+            document.querySelector('#user-link').classList.add('active');
+        }
+        
+        // Close login modal
+        function closeLoginModal() {
+            document.getElementById('login-modal').style.display = 'none';
+            document.getElementById('login-error').style.display = 'none';
+            document.getElementById('admin-username').value = '';
+            document.getElementById('admin-password').value = '';
+        }
+        
+        // Load submissions for admin
+        function loadSubmissions() {
+            const submissionList = document.getElementById('submission-list');
+            submissionList.innerHTML = '';
+            
+            if (submissions.length === 0) {
+                submissionList.innerHTML = '<p style="padding: 20px; text-align: center; color: var(--gray);">Tidak ada pengajuan</p>';
+                return;
+            }
+            
+            submissions.forEach(sub => {
+                const card = document.createElement('div');
+                card.className = 'submission-card';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="user-avatar">${sub.username.charAt(0)}</div>
+                        <div>
+                            <strong>${sub.username}</strong>
+                            <div style="font-size: 0.8rem; color: ${sub.status === 'Approved' ? '#2ecc71' : sub.status === 'Rejected' ? '#e74c3c' : '#f39c12'}">${sub.status}</div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p><i class="fas fa-phone"></i> ${sub.phone}</p>
+                        <p><i class="fas fa-calendar"></i> ${sub.date}</p>
+                        <div class="submission-images">
+                            <div class="submission-image">
+                                ${sub.imei ? '<img src="' + sub.imei + '" alt="IMEI">' : 'IMEI'}
+                            </div>
+                            <div class="submission-image">
+                                ${sub.idPhoto ? '<img src="' + sub.idPhoto + '" alt="ID">' : 'ID'}
+                            </div>
+                            <div class="submission-image">
+                                ${sub.selfie ? '<img src="' + sub.selfie + '" alt="Selfie">' : 'Selfie'}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-outline" onclick="viewSubmission(${sub.id})">
+                            <i class="fas fa-eye"></i> Lihat Detail
+                        </button>
+                        <span class="status-badge" style="color: ${sub.status === 'Approved' ? '#2ecc71' : sub.status === 'Rejected' ? '#e74c3c' : '#f39c12'}">
+                            ${sub.status}
+                        </span>
+                    </div>
+                `;
+                submissionList.appendChild(card);
+            });
+        }
+        
+        // View submission details
+        function viewSubmission(id) {
+            const submission = submissions.find(sub => sub.id === id);
+            if (!submission) return;
+            
+            currentSubmission = submission;
+            
+            const modalImages = document.getElementById('modal-images');
+            modalImages.innerHTML = `
+                <div class="modal-image">
+                    ${submission.imei ? '<img src="' + submission.imei + '" alt="IMEI">' : 'Tidak ada foto IMEI'}
+                </div>
+                <div class="modal-image">
+                    ${submission.idPhoto ? '<img src="' + submission.idPhoto + '" alt="ID">' : 'Tidak ada foto ID'}
+                </div>
+                <div class="modal-image">
+                    ${submission.selfie ? '<img src="' + submission.selfie + '" alt="Selfie">' : 'Tidak ada foto selfie'}
+                </div>
+            `;
+            
+            document.getElementById('modal-username').textContent = submission.username;
+            document.getElementById('modal-phone').textContent = submission.phone;
+            document.getElementById('modal-date').textContent = submission.date;
+            document.getElementById('modal-status').textContent = submission.status;
+            document.getElementById('modal-status').style.color = 
+                submission.status === 'Approved' ? '#2ecc71' : 
+                submission.status === 'Rejected' ? '#e74c3c' : '#f39c12';
+            
+            document.getElementById('submission-modal').style.display = 'flex';
+        }
+        
+        // Close modal
+        function closeModal() {
+            document.getElementById('submission-modal').style.display = 'none';
+            currentSubmission = null;
+        }
+        
+        // Approve submission
+        function approveSubmission() {
+            if (!currentSubmission) return;
+            
+            const index = submissions.findIndex(sub => sub.id === currentSubmission.id);
+            if (index !== -1) {
+                submissions[index].status = 'Approved';
+                localStorage.setItem('submissions', JSON.stringify(submissions));
+                loadSubmissions();
+                refreshAdminStats();
+                showStatus('Pengajuan disetujui!', true);
+                closeModal();
+            }
+        }
+        
+        // Reject submission
+        function rejectSubmission() {
+            if (!currentSubmission) return;
+            
+            const index = submissions.findIndex(sub => sub.id === currentSubmission.id);
+            if (index !== -1) {
+                submissions[index].status = 'Rejected';
+                localStorage.setItem('submissions', JSON.stringify(submissions));
+                loadSubmissions();
+                refreshAdminStats();
+                showStatus('Pengajuan ditolak!', false);
+                closeModal();
+            }
+        }
+        
+        // Refresh admin stats
+        function refreshAdminStats() {
+            document.getElementById('imei-count').textContent = 
+                submissions.filter(sub => sub.imei).length;
+                
+            document.getElementById('id-count').textContent = 
+                submissions.filter(sub => sub.idPhoto).length;
+                
+            document.getElementById('selfie-count').textContent = 
+                submissions.filter(sub => sub.selfie).length;
+        }
+        
+        // Refresh submissions
+        function refreshSubmissions() {
+            submissions = JSON.parse(localStorage.getItem('submissions')) || [];
+            loadSubmissions();
+            refreshAdminStats();
+            showStatus('Data diperbarui!', true);
+        }
+    </script>
+</body>
+</html>
